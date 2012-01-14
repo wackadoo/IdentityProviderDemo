@@ -12,4 +12,6 @@
 
 @property (strong, nonatomic) UIPopoverController *flipsidePopoverController;
 
+@property (strong, nonatomic) NSString* accessToken;
+
 @end

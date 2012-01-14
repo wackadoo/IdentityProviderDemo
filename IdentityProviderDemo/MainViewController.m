@@ -8,9 +8,14 @@
 
 #import "MainViewController.h"
 
+@interface MainViewController(InternalProtocol)
+-(IBAction)togglePopover:(id)sender;
+@end
+
 @implementation MainViewController
 
 @synthesize flipsidePopoverController = _flipsidePopoverController;
+@synthesize accessToken = _accessToken;
 
 - (void)didReceiveMemoryWarning
 {
@@ -22,8 +27,8 @@
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+  [super viewDidLoad];
+
 }
 
 - (void)viewDidUnload
@@ -40,7 +45,10 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    [super viewDidAppear:animated];
+  [super viewDidAppear:animated];
+  if (!self.accessToken) {
+    [self togglePopover:self];
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -96,6 +104,7 @@
 - (void)dealloc
 {
   [_flipsidePopoverController release];
+  [_accessToken release];
     [super dealloc];
 }
 
