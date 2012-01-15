@@ -12,6 +12,7 @@
 
 @protocol FlipsideViewControllerDelegate
 - (void)flipsideViewControllerDidFinish:(FlipsideViewController *)controller;
+- (void)setAccessToken:(NSString*)token;
 @end
 
 @interface FlipsideViewController : UIViewController <UITextFieldDelegate>
@@ -22,6 +23,10 @@
 @property (assign, nonatomic) IBOutlet UITextField* password;
 @property (assign, nonatomic) IBOutlet UILabel* notice;
 @property (assign, nonatomic) IBOutlet UIActivityIndicatorView* activityIndicator;
+
+@property (retain, nonatomic) NSMutableData* receivedData;
+@property int statusCode;
+@property (retain, nonatomic) NSDictionary* headers;
 
 - (IBAction)done:(id)sender;
 - (IBAction)connect:(id)sender;
