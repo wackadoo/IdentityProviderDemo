@@ -9,6 +9,9 @@
 #import "FlipsideViewController.h"
 #import "SBJson.h"
 
+#define SERVER_BASE @"http://localhost:3000"
+
+
 @implementation FlipsideViewController
 
 @synthesize delegate = _delegate;
@@ -41,9 +44,11 @@
 
 - (void)viewDidUnload
 {
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
+  self.login = nil;
+  self.password = nil;
+  self.notice = nil;
+  self.activityIndicator = nil;
+  [super viewDidUnload];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -120,7 +125,7 @@
     [NSString stringWithFormat:@"grant_type=password&client_id=XYZ&username=%@&password=%@", self.login.text, self.password.text];
   
   NSMutableURLRequest *request=
-    [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://localhost:3000/oauth2/access_token"] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:20.0];
+    [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[SERVER_BASE stringByAppendingString:@"/oauth2/access_token"]] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:20.0];
   [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
   [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
   [request setHTTPMethod:@"POST"];
@@ -165,13 +170,10 @@
   
   NSLog(@"Received response %d - %@", httpresponse.statusCode, [NSHTTPURLResponse localizedStringForStatusCode:httpresponse.statusCode]);
   
-  NSLog(@"Header: %@", self.headers);
-  
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-  NSLog(@"received data");
   [self.receivedData appendData:data];
 }
 
@@ -184,20 +186,20 @@
         [error localizedDescription],
         [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]];
   self.notice.hidden = NO;
+  
+  [connection release];
 }
 
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-  NSLog(@"Succeeded! Received %d bytes of data",[self.receivedData length]);
-  
   [self stopActivity];
+  [connection release];
   
   if (![(NSString*)[self.headers objectForKey:@"Content-Type"] hasPrefix:@"application/json"]) {
     self.notice.text = @"Unexpected format of server response.";
     self.notice.hidden = NO;
     self.receivedData = nil;
-    [connection release];
     return ;
   }
   
@@ -205,7 +207,6 @@
     self.notice.text = @"Received no data.";
     self.notice.hidden = NO;
     self.receivedData = nil;
-    [connection release];
     return ;
   }
   
@@ -214,7 +215,6 @@
   NSString* string =[[NSString alloc] initWithData:self.receivedData encoding:NSUTF8StringEncoding];
   NSDictionary* content = [string JSONValue];
   
-  NSLog(@"Content (%d): %@", [self.receivedData length], string);    
   self.receivedData = nil;
 
   
