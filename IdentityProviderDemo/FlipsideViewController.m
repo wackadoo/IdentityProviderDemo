@@ -9,7 +9,7 @@
 #import "FlipsideViewController.h"
 #import "SBJson.h"
 
-#define SERVER_BASE @"http://localhost:3000"
+#define SERVER_BASE @"https://heldenduell.de/identity_provider"
 
 
 @implementation FlipsideViewController
@@ -254,5 +254,21 @@
     self.notice.hidden = NO;
   }
 }
+
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
+  return [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+  /*
+   if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust])
+   if ([trustedHosts containsObject:challenge.protectionSpace.host])*/
+  
+  [challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
+  
+  [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
+}
+
+
 
 @end

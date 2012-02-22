@@ -9,7 +9,7 @@
 #import "MainViewController.h"
 #import "SBJson.h"
 
-#define SERVER_BASE @"http://localhost:3000"
+#define SERVER_BASE @"https://heldenduell.de/identity_provider"
 
 @interface MainViewController(InternalProtocol)
 -(IBAction)togglePopover:(id)sender;
